@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Claw.dius Maximus | Open Claw in Your Browser</title>
+  <meta name="description" content="Run Open Claw instantly in your browser on a dedicated VM. No setup, no shared resources, no wasted time." />
+  <meta name="theme-color" content="#0a0a0a" />
+  <meta property="og:title" content="Claw.dius Maximus | Open Claw in Your Browser" />
+  <meta property="og:description" content="Dedicated VM. Zero setup. Open Claw works immediately." />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg: #f7f6f2;
+      --surface: rgba(255,255,255,0.72);
+      --surface-strong: rgba(255,255,255,0.9);
+      --ink: #0b0b0b;
+      --muted: #5e5e5a;
+      --line: rgba(11,11,11,0.1);
+      --line-strong: rgba(11,11,11,0.16);
+      --accent: #111111;
+      --accent-soft: rgba(17,17,17,0.06);
+      --shadow: 0 20px 60px rgba(0,0,0,0.08);
+      --shadow-soft: 0 10px 30px rgba(0,0,0,0.05);
+      --radius: 24px;
+      --radius-sm: 16px;
+      --max: 1240px;
+      --mono: 'JetBrains Mono', monospace;
+      --serif: 'Cormorant Garamond', Georgia, serif;
+      --sans: 'Inter', system-ui, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background:
+        radial-gradient(circle at top right, rgba(0,0,0,0.05), transparent 30%),
+        radial-gradient(circle at bottom left, rgba(0,0,0,0.04), transparent 28%),
+        var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      overflow-x: hidden;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+    }
+
+    .container {
+      width: min(calc(100% - 40px), var(--max));
+      margin: 0 auto;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 28px;
+      height: 1px;
+      background: var(--line-strong);
+    }
+
+    .section {
+      padding: 100px 0;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 36px;
+    }
+
+    .section-title {
+      font-family: var(--serif);
+      font-size: clamp(38px, 5vw, 72px);
+      font-weight: 400;
+      line-height: 0.98;
+      letter-spacing: -0.03em;
+      max-width: 10ch;
+    }
+
+    .section-copy {
+      max-width: 520px;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      background: rgba(247,246,242,0.72);
+      border-bottom: 1px solid rgba(11,11,11,0.06);
+    }
+
+    .site-header-inner {
+      width: min(calc(100% - 32px), var(--max));
+      margin: 0 auto;
+      min-height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #111, #555);
+      box-shadow: 0 0 0 6px rgba(17,17,17,0.06);
+      flex-shrink: 0;
+    }
+
+    .brand-text {
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.55);
+    }
+
+    .nav-link {
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      color: var(--muted);
+      transition: background 180ms ease, color 180ms ease, transform 180ms ease;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      background: rgba(17,17,17,0.08);
+      color: var(--ink);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 48px;
+      padding: 0 20px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      font-weight: 600;
+      transition: transform 180ms ease, background 180ms ease, color 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .btn-primary:hover {
+      background: #000;
+    }
+
+    .btn-secondary {
+      border-color: var(--line-strong);
+      color: var(--ink);
+      background: rgba(255,255,255,0.6);
+    }
+
+    .btn-secondary:hover {
+      background: #fff;
+    }
+
+    .hero {
+      position: relative;
+      padding: 64px 0 48px;
+      min-height: calc(100svh - 76px);
+      display: flex;
+      align-items: center;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 44px;
+      align-items: center;
+    }
+
+    .hero-copy {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero h1 {
+      margin-top: 18px;
+      font-family: var(--serif);
+      font-size: clamp(64px, 11vw, 132px);
+      line-height: 0.9;
+      font-weight: 400;
+      letter-spacing: -0.05em;
+      max-width: 11ch;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      font-weight: 400;
+    }
+
+    .hero p.lead {
+      margin-top: 24px;
+      max-width: 590px;
+      font-size: clamp(17px, 2vw, 20px);
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 30px;
+    }
+
+    .hero-meta {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 34px;
+      max-width: 760px;
+    }
+
+    .hero-stat {
+      padding: 18px 18px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.55);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .hero-stat strong {
+      display: block;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .hero-stat span {
+      font-size: 15px;
+      color: var(--ink);
+      line-height: 1.5;
+    }
+
+    .hero-panel {
+      position: relative;
+      padding: 28px;
+      border-radius: 32px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,0.88), rgba(255,255,255,0.62));
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      min-height: 560px;
+    }
+
+    .hero-panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(120deg, rgba(255,255,255,0.35), transparent 45%),
+        radial-gradient(circle at top right, rgba(0,0,0,0.08), transparent 26%);
+      pointer-events: none;
+    }
+
+    .panel-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .panel-dots {
+      display: flex;
+      gap: 8px;
+    }
+
+    .panel-dots span {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(17,17,17,0.16);
+    }
+
+    .panel-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .terminal {
+      position: relative;
+      z-index: 1;
+      margin-top: 20px;
+      border-radius: 24px;
+      background: #0d0d0d;
+      color: #e8e8e8;
+      padding: 24px;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
+      min-height: 390px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .terminal pre {
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.9;
+      white-space: pre-wrap;
+      color: #dbdbdb;
+    }
+
+    .terminal .prompt {
+      color: #ffffff;
+    }
+
+    .terminal .muted {
+      color: #a1a1a1;
+    }
+
+    .terminal-footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-top: 18px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      color: #b9b9b9;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .proof-bar {
+      padding: 18px 0 6px;
+    }
+
+    .proof-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .proof-card {
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(255,255,255,0.62);
+    }
+
+    .proof-card strong {
+      display: block;
+      font-size: 26px;
+      line-height: 1;
+      margin-bottom: 8px;
+      font-family: var(--serif);
+      font-weight: 500;
+      letter-spacing: -0.03em;
+    }
+
+    .proof-card span {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .step {
+      position: relative;
+      padding: 28px;
+      border-radius: 24px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.72);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .step-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: var(--accent-soft);
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 18px;
+    }
+
+    .step h3 {
+      font-size: 20px;
+      margin-bottom: 10px;
+      line-height: 1.2;
+    }
+
+    .step p {
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .feature-wrap {
+      padding: 100px 0;
+      background: #0d0d0d;
+      color: #fff;
+      margin: 100px 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-wrap::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.08), transparent 24%),
+        radial-gradient(circle at bottom right, rgba(255,255,255,0.06), transparent 26%);
+      pointer-events: none;
+    }
+
+    .feature-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+      gap: 34px;
+      align-items: start;
+    }
+
+    .feature-intro .eyebrow {
+      color: rgba(255,255,255,0.6);
+    }
+
+    .feature-intro .eyebrow::before {
+      background: rgba(255,255,255,0.24);
+    }
+
+    .feature-intro h2 {
+      margin-top: 18px;
+      font-family: var(--serif);
+      font-size: clamp(44px, 6vw, 86px);
+      line-height: 0.95;
+      font-weight: 400;
+      letter-spacing: -0.04em;
+      max-width: 10ch;
+    }
+
+    .feature-intro p {
+      margin-top: 20px;
+      max-width: 480px;
+      color: rgba(255,255,255,0.72);
+      font-size: 17px;
+      line-height: 1.8;
+    }
+
+    .feature-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .feature-card {
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      gap: 18px;
+      padding: 22px;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .feature-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: rgba(255,255,255,0.8);
+      background: rgba(255,255,255,0.06);
+    }
+
+    .feature-card h3 {
+      font-size: 19px;
+      margin-bottom: 6px;
+    }
+
+    .feature-card p {
+      color: rgba(255,255,255,0.7);
+      font-size: 15px;
+      line-height: 1.75;
+    }
+
+    .audience-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .audience-card {
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: rgba(255,255,255,0.66);
+      padding: 28px;
+    }
+
+    .audience-card h3 {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    .audience-card p {
+      color: var(--muted);
+      line-height: 1.75;
+    }
+
+    .quote {
+      padding: 84px 0;
+    }
+
+    .quote-card {
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.86), rgba(255,255,255,0.66));
+      box-shadow: var(--shadow-soft);
+      padding: clamp(28px, 5vw, 54px);
+      text-align: center;
+    }
+
+    .quote-card blockquote {
+      font-family: var(--serif);
+      font-size: clamp(34px, 5vw, 64px);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      max-width: 14ch;
+      margin: 0 auto;
+    }
+
+    .quote-card p {
+      margin-top: 20px;
+      color: var(--muted);
+      font-size: 15px;
+      max-width: 560px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .cta {
+      padding: 0 0 120px;
+    }
+
+    .cta-card {
+      position: relative;
+      overflow: hidden;
+      padding: clamp(30px, 6vw, 58px);
+      border-radius: 34px;
+      background: #111111;
+      color: #fff;
+      box-shadow: var(--shadow);
+    }
+
+    .cta-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at top right, rgba(255,255,255,0.12), transparent 24%),
+        linear-gradient(135deg, rgba(255,255,255,0.06), transparent 45%);
+      pointer-events: none;
+    }
+
+    .cta-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+      gap: 24px;
+      align-items: center;
+    }
+
+    .cta-card h2 {
+      font-family: var(--serif);
+      font-size: clamp(42px, 6vw, 88px);
+      line-height: 0.94;
+      letter-spacing: -0.04em;
+      font-weight: 400;
+      max-width: 10ch;
+    }
+
+    .cta-card p {
+      color: rgba(255,255,255,0.72);
+      font-size: 17px;
+      line-height: 1.8;
+      max-width: 440px;
+      margin-top: 18px;
+    }
+
+    .cta-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .cta-actions .btn-primary {
+      width: 100%;
+      max-width: 280px;
+      background: #fff;
+      color: #111;
+    }
+
+    .cta-actions .btn-primary:hover {
+      background: #f1f1f1;
+    }
+
+    .cta-actions .btn-secondary {
+      width: 100%;
+      max-width: 280px;
+      color: #fff;
+      border-color: rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.04);
+    }
+
+    .site-footer {
+      border-top: 1px solid var(--line);
+      padding: 28px 0 40px;
+    }
+
+    .site-footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .footer-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .footer-links {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a,
+    .footer-copy {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 700ms ease, transform 700ms ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .delay-1 { transition-delay: 80ms; }
+    .delay-2 { transition-delay: 160ms; }
+    .delay-3 { transition-delay: 240ms; }
+
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+    }
+
+    .skip-link:focus {
+      left: 16px;
+      top: 16px;
+      z-index: 2000;
+      background: #fff;
+      color: #000;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--line-strong);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+      .reveal {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    @media (max-width: 1100px) {
+      .hero-grid,
+      .feature-grid,
+      .cta-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-panel {
+        min-height: auto;
+      }
+
+      .proof-grid,
+      .steps,
+      .audience-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .section-head {
+        flex-direction: column;
+        align-items: start;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .container {
+        width: min(calc(100% - 24px), var(--max));
+      }
+
+      .site-header-inner {
+        width: min(calc(100% - 20px), var(--max));
+        min-height: 68px;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .hero {
+        padding: 42px 0 24px;
+        min-height: auto;
+      }
+
+      .hero h1 {
+        font-size: clamp(52px, 18vw, 86px);
+      }
+
+      .hero-meta,
+      .proof-grid,
+      .steps,
+      .audience-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .section,
+      .feature-wrap,
+      .cta {
+        padding-top: 72px;
+        padding-bottom: 72px;
+      }
+
+      .feature-wrap {
+        margin: 72px 0;
+      }
+
+      .step,
+      .audience-card,
+      .proof-card,
+      .feature-card {
+        padding: 22px;
+      }
+
+      .hero-panel,
+      .quote-card,
+      .cta-card {
+        border-radius: 24px;
+      }
+
+      .terminal {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="brand" href="#top" aria-label="Claw.dius Maximus home">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-text">Claw.dius Maximus</span>
+      </a>
+
+      <div class="nav">
+        <nav class="nav-links" aria-label="Primary navigation">
+          <a class="nav-link" href="#how">How it works</a>
+          <a class="nav-link" href="#product">Product</a>
+          <a class="nav-link" href="#who">Who it is for</a>
+          <a class="nav-link" href="#try">Try it</a>
+        </nav>
+        <a class="btn btn-primary" href="#try">Sign Up Free</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero container" id="top">
+      <div class="hero-grid">
+        <div class="hero-copy reveal visible">
+          <span class="eyebrow">Open Claw, out of the box</span>
+          <h1>
+            Open Claw,<br />
+            <em>running</em><br />
+            in your browser.
+          </h1>
+          <p class="lead">
+            Claw.dius gives you a dedicated VM that launches Open Claw instantly.
+            No setup. No dependency drama. No shared resources. Just open the browser and start working.
+          </p>
+
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#try">Sign Up Free</a>
+            <a class="btn btn-secondary" href="#how">See how it works</a>
+          </div>
+
+          <div class="hero-meta" aria-label="Key product points">
+            <div class="hero-stat">
+              <strong>Dedicated</strong>
+              <span>Your own isolated VM for each session.</span>
+            </div>
+            <div class="hero-stat">
+              <strong>Instant</strong>
+              <span>Open Claw is ready without local install steps.</span>
+            </div>
+            <div class="hero-stat">
+              <strong>Simple</strong>
+              <span>No CLI setup, config files, or environment issues.</span>
+            </div>
+          </div>
+        </div>
+
+        
+      </div>
+    </section>
+
+    <section class="proof-bar container reveal delay-1" aria-label="Proof points">
+      <div class="proof-grid">
+        <div class="proof-card">
+          <strong>No install</strong>
+          <span>Nothing local to configure before you begin.</span>
+        </div>
+        <div class="proof-card">
+          <strong>Isolated VM</strong>
+          <span>Dedicated resources instead of a shared environment.</span>
+        </div>
+        <div class="proof-card">
+          <strong>Fast start</strong>
+          <span>Less setup friction between intention and action.</span>
+        </div>
+        
+      </div>
+    </section>
+
+    <section class="section container" id="how">
+      <div class="section-head reveal">
+        <div>
+          <span class="eyebrow">How it works</span>
+          <h2 class="section-title">Three steps. No wasted motion.</h2>
+        </div>
+        <p class="section-copy">
+          The product promise is simple. Get rid of setup friction so people can start using Open Claw the moment they decide they want it.
+        </p>
+      </div>
+
+      <div class="steps">
+        <article class="step reveal delay-1">
+          <div class="step-number">01</div>
+          <h3>Open the site</h3>
+          <p>Visit Claw.dius in your browser. No install, no package managers, no environment setup checklist.</p>
+        </article>
+
+        <article class="step reveal delay-2">
+          <div class="step-number">02</div>
+          <h3>Your VM spins up</h3>
+          <p>A dedicated virtual machine is provisioned for you, giving each session its own isolated space to run.</p>
+        </article>
+
+        <article class="step reveal delay-3">
+          <div class="step-number">03</div>
+          <h3>Start working immediately</h3>
+          <p>Open Claw is already there and ready. You move straight into use, not setup, troubleshooting, or dependency cleanup.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="feature-wrap" id="product">
+      <div class="container feature-grid">
+        <div class="feature-intro reveal">
+          <span class="eyebrow">The product</span>
+          <h2>Open Claw, without the usual friction.</h2>
+          <p>
+            This is built for people who want the capability of Open Claw, not the ceremony around getting it running.
+            Every design choice pushes toward speed, clarity, and immediate usefulness.
+          </p>
+        </div>
+
+        <div class="feature-list">
+          <article class="feature-card reveal delay-1">
+            <div class="feature-icon">01</div>
+            <div>
+              <h3>Works immediately</h3>
+              <p>You open the browser and the environment is ready. There is no dead time between arrival and first use.</p>
+            </div>
+          </article>
+
+          <article class="feature-card reveal delay-2">
+            <div class="feature-icon">02</div>
+            <div>
+              <h3>Dedicated VM</h3>
+              <p>Your session runs on its own isolated machine, which is cleaner, safer, and more dependable than a pooled shared setup.</p>
+            </div>
+          </article>
+
+          <article class="feature-card reveal delay-3">
+            <div class="feature-icon">03</div>
+            <div>
+              <h3>Zero configuration</h3>
+              <p>No CLI gymnastics, no config files, and no dependency mismatch problems before work can begin.</p>
+            </div>
+          </article>
+
+          <article class="feature-card reveal delay-3">
+            <div class="feature-icon">04</div>
+            <div>
+              <h3>Built to save time</h3>
+              <p>The core value is simple. Remove setup tax and return more of the session to the actual job the user came to do.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section container" id="who">
+      <div class="section-head reveal">
+        <div>
+          <span class="eyebrow">Who it is for</span>
+          <h2 class="section-title">Made for people who care about momentum.</h2>
+        </div>
+        <p class="section-copy">
+          The strongest fit is anyone who values fast access, clean environments, and fewer technical interruptions before real work starts.
+        </p>
+      </div>
+
+      <div class="audience-grid">
+        <article class="audience-card reveal delay-1">
+          <h3>Builders</h3>
+          <p>Developers, operators, and technical users who want a clean Open Claw session without managing local setup.</p>
+        </article>
+
+        <article class="audience-card reveal delay-2">
+          <h3>Teams</h3>
+          <p>Groups that need a simpler way to get consistent environments running across users without local machine variance.</p>
+        </article>
+
+        <article class="audience-card reveal delay-3">
+          <h3>Busy decision makers</h3>
+          <p>People who want capability now, not a setup project. The value is speed to use and lower mental overhead.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="quote container">
+      <div class="quote-card reveal">
+        <blockquote>
+          Setup should not be the job.
+        </blockquote>
+        <p>
+          Claw.dius removes the steps between wanting Open Claw and actually using Open Claw.
+        </p>
+      </div>
+    </section>
+
+    <section class="cta container" id="try">
+      <div class="cta-card reveal">
+        <div class="cta-grid">
+          <div>
+            <span class="eyebrow">Sign Up for Claw.dius</span>
+            <h2>Open Claw. Dedicated VM. Zero setup.</h2>
+            <p>
+              Launch straight from the browser and get to work immediately. One clean entry point. One clear promise.
+            </p>
+          </div>
+
+          <div class="cta-actions">
+            <a class="btn btn-primary" href="#">Sign Up Free</a>
+            <a class="btn btn-secondary" href="mailto:contact@lvl3.ai">Contact Level 3 AI</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container site-footer-inner">
+      <div class="footer-left">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>Claw.dius Maximus</span>
+      </div>
+
+      <nav class="footer-links" aria-label="Footer">
+        <a href="#how">How it works</a>
+        <a href="#product">Product</a>
+        <a href="#who">Who it is for</a>
+        <a href="mailto:contact@lvl3.ai">Contact</a>
+      </nav>
+
+      <div class="footer-copy">© <span id="year"></span> Level 3 AI</div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      const yearEl = document.getElementById('year');
+      if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const revealItems = document.querySelectorAll('.reveal');
+
+      if (!prefersReducedMotion && 'IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries, obs) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              obs.unobserve(entry.target);
+            }
+          });
+        }, {
+          threshold: 0.12,
+          rootMargin: '0px 0px -40px 0px'
+        });
+
+        revealItems.forEach((item) => observer.observe(item));
+      } else {
+        revealItems.forEach((item) => item.classList.add('visible'));
+      }
+
+      const navLinks = Array.from(document.querySelectorAll('.nav-link'));
+      const sections = navLinks
+        .map((link) => document.querySelector(link.getAttribute('href')))
+        .filter(Boolean);
+
+      if ('IntersectionObserver' in window && navLinks.length && sections.length) {
+        const sectionObserver = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            const id = '#' + entry.target.id;
+            navLinks.forEach((link) => {
+              link.classList.toggle('active', link.getAttribute('href') === id);
+            });
+          });
+        }, {
+          threshold: 0.45,
+          rootMargin: '-20% 0px -40% 0px'
+        });
+
+        sections.forEach((section) => sectionObserver.observe(section));
+      }
+    })();
+  </script>
+</body>
+</html>
